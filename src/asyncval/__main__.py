@@ -31,7 +31,7 @@ def write_ranking(corpus_indices, corpus_scores, q_lookup, ranking_save_file):
                 f.write(f'{qid}\t{idx}\t{rank + 1}\n')
 
 
-def encoding(dataset, model, tokenizer, max_length, hf_args, encode_is_qry=False):
+def encoding(dataset, model, tokenizer, max_length, hf_args, async_args, encode_is_qry=False):
     encode_loader = DataLoader(
         dataset,
         batch_size=hf_args.per_device_eval_batch_size,
@@ -51,7 +51,7 @@ def encoding(dataset, model, tokenizer, max_length, hf_args, encode_is_qry=False
         lookup_indices.extend(batch_ids)
         with torch.cuda.amp.autocast() if hf_args.fp16 else nullcontext():
             with torch.no_grad():
-                batch.to(hf_args.device)
+                batch.to(async_args.device)
                 if encode_is_qry:
                     q_reps = model.encode_query(batch)
                     encoded.append(q_reps.cpu())
@@ -138,15 +138,15 @@ def main():
                     ckpt_path=ckpt_path,
                     async_args=async_args,
                 ).eval()
-                model = model.to(hf_args.device)
+                model = model.to(async_args.device)
 
-                p_lookup, p_reps = encoding(candidate_dataset, model, tokenizer, async_args.p_max_len, hf_args)
+                p_lookup, p_reps = encoding(candidate_dataset, model, tokenizer, async_args.p_max_len, hf_args, async_args)
 
                 q_lookup_list = []
                 q_reps_list = []
                 for query_dataset in query_datasets:
-                    q_lookup, q_reps = encoding(query_dataset, model, tokenizer, async_args.q_max_len, hf_args,
-                                                encode_is_qry=True)
+                    q_lookup, q_reps = encoding(query_dataset, model, tokenizer, async_args.q_max_len,
+                                                hf_args, async_args, encode_is_qry=True)
                     q_lookup_list.append(q_lookup)
                     q_reps_list.append(q_reps)
 
@@ -186,9 +186,10 @@ def main():
                 gc.collect()
 
                 # breaking the validation loop if hitting the max number of validations
-                if len(finished_ckpts) >= async_args.max_num_valid and async_args.max_num_valid != -1:
-                    hit_max = True
-                    break
+                if async_args.max_num_valid is not None:
+                    if len(finished_ckpts) >= async_args.max_num_valid:
+                        hit_max = True
+                        break
                 logger.info(f"Listening to {async_args.ckpts_dir}")
         time.sleep(5)
 

@@ -24,7 +24,7 @@ class Processor:
         return None
 
 
-def read_run_file(run_file, qrel_file, cutoff=100):
+def read_run_file(run_file, qrel_file, depth=100):
     uniq_dids = set()
     with open(run_file) as rf:
         lines = rf.readlines()
@@ -35,7 +35,7 @@ def read_run_file(run_file, qrel_file, cutoff=100):
             if qid != temp_qid:
                 temp_qid = qid
                 rank = 0
-            if rank < cutoff:
+            if rank < depth:
                 uniq_dids.add(did)
             rank += 1
 
@@ -55,7 +55,7 @@ def main(args):
         level=logging.INFO,
     )
 
-    uniq_ids = list(read_run_file(args.run_file, args.qrel_file, args.cutoff))
+    uniq_ids = list(read_run_file(args.run_file, args.qrel_file, args.depth))
     processor = Processor(uniq_ids)
     logger.info(f"Total number of documents: {len(uniq_ids)}")
     candidate_data = datasets.load_dataset(
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     parser.add_argument('--qrel_file', required=True)
     parser.add_argument('--output_dir', required=True)
     parser.add_argument('--cache_dir', default=None)
-    parser.add_argument('--cutoff', type=int, default=100)
+    parser.add_argument('--depth', type=int, default=100)
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)

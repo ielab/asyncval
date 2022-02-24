@@ -40,16 +40,20 @@ class AsyncvalArguments:
     )
 
     max_num_valid: int = field(
-        default=-1, metadata={"help": "Max number of checkpoints to validate."}
+        default=None, metadata={"help": "Max number of checkpoints to validate."}
     )
 
     retrieve_batch_size: int = field(default=64, metadata={"help": "Faiss retrieval batch size."})
     depth: int = field(default=100, metadata={"help": "Ranking depth."})
 
     metrics: List[str] = field(
-        default_factory=lambda: ['mrr'], metadata={"help": "The list of metrics for validation."}
+        default_factory=lambda: ['RR@10', 'nDCG@10'], metadata={"help": "The list of metrics for validation."}
     )
 
     write_run: bool = field(
-        default=False, metadata={"help": "Write the run file to disk or not"}
+        default=True, metadata={"help": "Write the run file to disk or not"}
+    )
+
+    device: str = field(
+        default='cuda:0', metadata={"help": "The GPU device uses for running asyncval."}
     )
