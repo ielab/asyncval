@@ -85,6 +85,6 @@ python -m asyncval.splitter \
 		--run_file str \
 		--qrel_file str \
 		--output_dir str \
-		--cutoff int
+		--depth int
 ```
-where `--candidate_file` is the path to the pre-tokenized full corpus JSON file; `--run_file` is the path to the run file; `--qrel_file` is the path to the TREC qrel file;  `--output_dir` is the path to the folder in which to save the JSON file for the subset; and `--depth` is the number of top passages to keep for each query in the run file. For example, setting `--cutoff` to 100 means that only the top 100 passages for each query are kept. This trades-off validation accuracy for speed. Then you can use the generated subset corpus file for validation. We found that, instead of BM25, using a strong dense retriever baseline to generate the subset can dramatically reduce the validation time of each checkpoint without loss of fidelity.
+where `--candidate_file` is the path to the pre-tokenized full corpus JSON file; `--run_file` is the path to the run file; `--qrel_file` is the path to the TREC qrel file;  `--output_dir` is the path to the folder in which to save the JSON file for the subset; and `--depth` is the number of top passages to keep for each query in the run file. For example, setting `--depth` to 100 means that only the top 100 passages for each query are kept. This trades-off validation accuracy for speed. Then you can use the generated subset corpus file for validation. We found that, instead of BM25, using a strong dense retriever baseline to generate the subset can dramatically reduce the validation time of each checkpoint without loss of fidelity.
