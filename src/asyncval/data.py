@@ -28,7 +28,6 @@ class EncodeDataset(Dataset):
         text_id, text = (self.encode_data[item][f] for f in self.input_keys)
         encoded_text = self.tok.encode_plus(
             text,
-            add_special_tokens=False,
             max_length=self.max_len,
             truncation='only_first',
             padding=False,

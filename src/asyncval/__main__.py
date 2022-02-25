@@ -105,7 +105,11 @@ def main():
                                       cache_dir=async_args.cache_dir)
         query_datasets.append(query_dataset)
 
-    candidate_dataset = EncodeDataset(async_args.candidate_file,
+    files = os.listdir(async_args.candidate_dir)
+    candidate_files = [
+        os.path.join(async_args.candidate_dir, f) for f in files if f.endswith('json')
+    ]
+    candidate_dataset = EncodeDataset(candidate_files,
                                       tokenizer,
                                       max_len=async_args.p_max_len,
                                       cache_dir=async_args.cache_dir)

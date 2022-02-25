@@ -14,8 +14,8 @@ class AsyncvalArguments:
     qrel_file: str = field(
         default=None, metadata={"help": "Path to qrel file."}
     )
-    candidate_file: str = field(
-        default=None, metadata={"help": "Path to candidate file."}
+    candidate_dir: str = field(
+        default=None, metadata={"help": "Path to the folder where candidate files are saved."}
     )
     cache_dir: str = field(
         default=None, metadata={"help": "Cache folder."}

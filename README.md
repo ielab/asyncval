@@ -55,7 +55,7 @@ python -m asyncval \
 | name                       | desciption                                                                                     | type      | default             |
 |----------------------------|------------------------------------------------------------------------------------------------|-----------|---------------------|
 | query_file                 | The path to the pre-tokenized query JSON file. Multiple files can be provided.                 | List[str] | required            |
-| candidate_file             | The path to the pre-tokenized corpus JSON file.                                                | str       | required            |
+| candidate_dir             | The path to the folder that saves the pre-tokenized corpus JSON files.                                                | str       | required            |
 | ckpts_dir                  | The path to the folder that saves DR checkpoints.                                              | str       | required            |
 | tokenizer\_name\_or\_path     | The path or name to the Huggingface tokenizer. (for padding and attention masking)             | str       | required            |
 | q\_max\_len                  | the maximum number of query token.                                                             | int       | 32                  |
@@ -81,10 +81,10 @@ To further speed up checkpoint validation, we also provide a feature to sample f
 
 ```
 python -m asyncval.splitter \
-		--candidate_file str \
+		--candidate_dir str \
 		--run_file str \
 		--qrel_file str \
 		--output_dir str \
 		--depth int
 ```
-where `--candidate_file` is the path to the pre-tokenized full corpus JSON file; `--run_file` is the path to the run file; `--qrel_file` is the path to the TREC qrel file;  `--output_dir` is the path to the folder in which to save the JSON file for the subset; and `--depth` is the number of top passages to keep for each query in the run file. For example, setting `--depth` to 100 means that only the top 100 passages for each query are kept. This trades-off validation accuracy for speed. Then you can use the generated subset corpus file for validation. We found that, instead of BM25, using a strong dense retriever baseline to generate the subset can dramatically reduce the validation time of each checkpoint without loss of fidelity.
+where `--candidate_dir` is the path to folder that saves the pre-tokenized full corpus JSON files; `--run_file` is the path to the run file; `--qrel_file` is the path to the TREC qrel file;  `--output_dir` is the path to the folder in which to save the JSON file for the subset; and `--depth` is the number of top passages to keep for each query in the run file. For example, setting `--depth` to 100 means that only the top 100 passages for each query are kept. This trades-off validation accuracy for speed. Then you can use the generated subset corpus file for validation. We found that, instead of BM25, using a strong dense retriever baseline to generate the subset can dramatically reduce the validation time of each checkpoint without loss of fidelity.

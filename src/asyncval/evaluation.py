@@ -38,7 +38,11 @@ class Evaluator:
         qrels = {}
         with open(qrel_file, 'r') as f:
             for l in f:
-                qid, _, docid, rel = l.strip().split('\t')
+                try:
+                    qid, _, docid, rel = l.strip().split('\t')
+                except ValueError:
+                    raise ValueError("Wrong qrel format.")
+
                 if qid not in qrels:
                     qrels[qid] = {}
                 qrels[qid][docid] = int(rel)
