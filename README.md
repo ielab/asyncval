@@ -18,7 +18,7 @@ pip install --editable .
 ## Preparation
 To be able to use Asycval to validate your dense retreiver checkpoints, there are only two things you need to prepare:
 
-###(1) Prepare the corpus and the validation query files
+### (1) Prepare the corpus and the validation query files
 Corpus and validation query files are to be in **JSON** format; specifically each line in the file is a JSON object that represents a passage or a query:
 
 ```
@@ -28,7 +28,7 @@ where “text_id” is a unique id for a passage or query in the corpus or query
 
 We suggesting Asyncval’s users to tokenize their passages and queries and thus supply only token ids for two reasons: (1) Different DRs may use different customized tokenizers and special tokens, (2) Pre-tokenizing all text at once can speed up validation as there is no need to tokenize the same query and passage for each model checkpoint.
 
-###(2) Rewrite DenseModel Class in [`src/asyncval/modeling.py`](./src/asyncval/modeling.py). (Tevatron users can skip this step)
+### (2) Rewrite DenseModel Class in [`src/asyncval/modeling.py`](./src/asyncval/modeling.py). (Tevatron users can skip this step)
 After the corpus and query file are prepared, a python class called `DenseModel` needs to be defined; 
 
 Rewrite the `__init__` constructor method to intital your dense retriever encoder model. This method should take the checkpoint path and the pre-defined `AsyncvalArguments` as inputs. In [`AsyncvalArguments`](./src/asyncval/arguments.py) we pre-defined several useful arguments that can be passed via command line.
@@ -51,18 +51,18 @@ python -m asyncval \
 
 ```
 
-####Arguments Description
+#### Arguments Description
 | name                       | desciption                                                                                     | type      | default             |
 |----------------------------|------------------------------------------------------------------------------------------------|-----------|---------------------|
 | query_file                 | The path to the pre-tokenized query JSON file. Multiple files can be provided.                 | List[str] | required            |
 | candidate_dir             | The path to the folder that saves the pre-tokenized corpus JSON files.                                                | str       | required            |
 | ckpts_dir                  | The path to the folder that saves DR checkpoints.                                              | str       | required            |
 | tokenizer\_name\_or\_path     | The path or name to the Huggingface tokenizer. (for padding and attention masking)             | str       | required            |
-| q\_max\_len                  | the maximum number of query token.                                                             | int       | 32                  |
-| p\_max\_len                  | the maximum number of document token.                                                          | int       | 128                 |
-| qrel_file                  | the path to the TREC format qrel file.                                                         | str       | required            |
+| q\_max\_len                  | The maximum number of query token.                                                             | int       | 32                  |
+| p\_max\_len                  | The maximum number of document token.                                                          | int       | 128                 |
+| qrel_file                  | The path to the TREC format qrel file.                                                         | str       | required            |
 | run_name                   | A descriptor for the run. Typically used for [wandb](https://www.wandb.com/).                  | str       | None                |
-| write_run                  | whether to write run files to disk.                                                            | bool      | True                |
+| write_run                  | Whether to write run files to disk.                                                            | bool      | True                |
 | output_dir                 | The path to save checkpoint run files.                                                         | str       | required            |
 | logging_dir                | Tensorboard log dir.                                                                           | str       | None                |
 | metrics                    | The list of [ir_mesures](https://ir-measur.es/en/latest/measures.html) metrics for validation. | List[str] | ['RR@10','nDCG@10'] |
@@ -87,4 +87,5 @@ python -m asyncval.splitter \
 		--output_dir str \
 		--depth int
 ```
+
 where `--candidate_dir` is the path to folder that saves the pre-tokenized full corpus JSON files; `--run_file` is the path to the run file; `--qrel_file` is the path to the TREC qrel file;  `--output_dir` is the path to the folder in which to save the JSON file for the subset; and `--depth` is the number of top passages to keep for each query in the run file. For example, setting `--depth` to 100 means that only the top 100 passages for each query are kept. This trades-off validation accuracy for speed. Then you can use the generated subset corpus file for validation. We found that, instead of BM25, using a strong dense retriever baseline to generate the subset can dramatically reduce the validation time of each checkpoint without loss of fidelity.
