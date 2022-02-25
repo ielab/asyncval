@@ -9,7 +9,7 @@ First, follow the instruction in this tevatron [example](https://github.com/text
 
 Conducting retrieval validation against the full corpus is very slow. To speed up validation time for each checkpoint without loss validation accuracy, we can fisrt sample a subset of corpus based on a given run file and the qrel file which provides gold (relevant) passages for each query in the validation set.
 
-Frist, to have a run file, you can use [Pyserini](https://github.com/castorini/pyserini) IR toolkit to get a MS MARCO dev query run file. In this example we use [TCT-ColBERTv2](https://github.com/castorini/pyserini/blob/master/docs/experiments-distilbert_tasb.md) as our base DR model to generate the run file.
+To have a run file, you can use [Pyserini](https://github.com/castorini/pyserini) IR toolkit to get a MS MARCO dev query run file. In this example we use [TCT-ColBERTv2](https://github.com/castorini/pyserini/blob/master/docs/experiments-distilbert_tasb.md) as our base DR model to generate the run file.
 
 After to get the run file, run the following command to create the corpus subset:
 
