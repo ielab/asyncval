@@ -43,7 +43,8 @@ python -m asyncval \
 --logging_dir ./logs/tevatron_retriever_model
 --depth 10 \
 --per_device_eval_batch_size 64 \
---fp16
+--fp16 \
+--cache_dir cache
 ```
 
 The following are the retrieval validation results on tensorboard:

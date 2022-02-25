@@ -6,6 +6,8 @@ Validating dense retriever checkpoints during training is time-consuming. Asyncv
 ![.im](asyncval.png)
 
 ## Installation
+For [Tevatron](https://github.com/texttron/tevatron) users: `pip install asyncval`
+ 
 For customized dense retriever encoders, clone this repo and install as editable,
 
 ```
@@ -13,7 +15,7 @@ git clone https://github.com/ielab/asyncval.git
 cd asyncval
 pip install --editable .
 ```
-> Note: The current code base has been tested with, `torch==1.10.0`, `transformers==4.5.1`, `datasets==1.16.1`, `faiss-cpu==1.7.1`, `python==3.7`
+> Note: The current code base has been tested with, `torch==1.10.0`, `transformers==4.5.1`, `datasets==1.16.1`, `faiss-cpu==1.7.1`, `python==3.7`, `ir_measures==0.2.3`
 
 ## Preparation
 To be able to use Asycval to validate your dense retreiver checkpoints, there are only two things you need to prepare:
@@ -24,9 +26,9 @@ Corpus and validation query files are to be in **JSON** format; specifically eac
 ```
 {"text_id": str, "text": List[int]}
 ```
-where “text_id” is a unique id for a passage or query in the corpus or query file, and “text” is a list of integers representing the token ids, including ids for the tokens in the passage or query text and any special token ids (such as token id for [CLS] and [SEP]).
+where `text_id` is a unique id for a passage or query in the corpus or query file, and `text` is a list of integers representing the token ids of the passage or query. 
 
-We suggesting Asyncval’s users to tokenize their passages and queries and thus supply only token ids for two reasons: (1) Different DRs may use different customized tokenizers and special tokens, (2) Pre-tokenizing all text at once can speed up validation as there is no need to tokenize the same query and passage for each model checkpoint.
+Note the `text` field can also be the raw string of passage or query, however, we suggest Asyncval’s users to pre-tokenize their passages and queries and thus supply only token ids because Pre-tokenizing all text at once can speed up validation as there is no need to tokenize the same query and passage for each model checkpoint.
 
 ### (2) Rewrite DenseModel Class in [`src/asyncval/modeling.py`](./src/asyncval/modeling.py). (Tevatron users can skip this step)
 After the corpus and query file are prepared, a python class called `DenseModel` needs to be defined; 
