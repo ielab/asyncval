@@ -8,14 +8,14 @@ Validating dense retriever checkpoints during training is time-consuming. Asyncv
 ## Installation
 For [Tevatron](https://github.com/texttron/tevatron) users: `pip install asyncval`
  
-For customized dense retriever encoders, clone this repo and install as editable,
+For customized dense retriever encoders, clone this repo and install as editable:
 
 ```
 git clone https://github.com/ielab/asyncval.git
 cd asyncval
 pip install --editable .
 ```
-> Note: The current code base has been tested with, `torch==1.10.0`, `transformers==4.5.1`, `datasets==1.16.1`, `faiss-cpu==1.7.1`, `python==3.7`, `ir_measures==0.2.3`
+> Note: The current code base has been tested with, `torch==1.10.0`, `transformers==4.16.2`, `datasets==1.16.1`, `faiss-cpu==1.7.1`, `python==3.7`, `ir_measures==0.2.3`
 
 ## Preparation
 To be able to use Asycval to validate your dense retreiver checkpoints, there are only two things you need to prepare:
