@@ -91,3 +91,16 @@ python -m asyncval.splitter \
 ```
 
 where `--candidate_dir` is the path to folder that saves the pre-tokenized full corpus JSON files; `--run_file` is the path to the run file; `--qrel_file` is the path to the TREC qrel file;  `--output_dir` is the path to the folder in which to save the JSON file for the subset; and `--depth` is the number of top passages to keep for each query in the run file. For example, setting `--depth` to 100 means that only the top 100 passages for each query are kept. This trades-off validation accuracy for speed. Then you can use the generated subset corpus file for validation. We found that, instead of BM25, using a strong dense retriever baseline to generate the subset can dramatically reduce the validation time of each checkpoint without loss of fidelity.
+
+
+----
+If you used our toolkit in your research, please consider to cite us:
+
+```
+@article{zhuang2022asyncval,
+  title={Asyncval: A Toolkit for Asynchronously Validating Dense Retriever Checkpoints during Training},
+  author={Zhuang, Shengyao and Zuccon, Guido},
+  journal={arXiv preprint arXiv:2202.12510},
+  year={2022}
+}
+```
