@@ -6,6 +6,7 @@ In this example, we use Asyncval to validate dense retreiver ckeckpoints generat
 First, follow the instructions in this tevatron [example](https://github.com/texttron/tevatron/tree/main/examples/msmarco-passage-ranking) to get MS MARCO data and start training. You don't need to do the encoding and search steps.
 
 ## Sample Corpus Subset
+(if you want to validate with the full corpus, skip this step)
 
 Conducting retrieval validation against the full corpus is very slow. To speed up validation time for each checkpoint without loss validation accuracy, we can first sample a subset of corpus based on a given run file and the qrel file which provides gold (relevant) passages for each query in the validation set.
 
@@ -46,6 +47,7 @@ python -m asyncval \
 --fp16 \
 --cache_dir cache
 ```
+> Note: if you validating with the full corpus, change `--candidate_dir ./marco/bert/corpus_tctv2_subset_top10` to `--candidate_dir .marco/bert/corpus/`
 
 The following are the retrieval validation results on tensorboard:
 ![results.png](results.png)
