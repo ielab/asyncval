@@ -125,6 +125,7 @@ def main():
     while not hit_max:
         current_change = os.stat(async_args.ckpts_dir).st_mtime
         if current_change != last_change or len(os.listdir(async_args.ckpts_dir)) != 0:
+            time.sleep(5)
             last_change = current_change
             ckpt_time = [(ckpt, os.stat(os.path.join(async_args.ckpts_dir, ckpt)).st_mtime)
                          for ckpt in os.listdir(async_args.ckpts_dir)]
