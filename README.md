@@ -1,7 +1,7 @@
 # Asyncval
 [Asyncval: A toolkit for asynchronously validating dense retriever checkpoints during training.](https://arxiv.org/abs/2202.12510)
 
-Validating dense retriever checkpoints during training is time-consuming. Asyncval is a toolkit that aims to accelerate this process. Asyncval decouples the validation loop from the training loop, uses another GPU to automatically validate new DR checkpoints generated during training, and thus permits to perform validation asynchronously from training.
+Validating dense retriever checkpoints during training is time-consuming. Asyncval is a toolkit that aims to accelerate this process. Asyncval decouples the validation loop from the training loop, uses another GPU to automatically validate new DR checkpoints generated during training, thus permitting  validation to be performed asynchronously from training.
 
 ![.im](asyncval.png)
 
