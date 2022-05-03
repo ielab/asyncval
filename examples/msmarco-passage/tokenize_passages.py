@@ -17,7 +17,7 @@ class SimpleCollectionPreProcessor:
         xx = line.strip().split(self.separator)
         text_id, text = xx[0], xx[1:]
         text_encoded = self.tokenizer.encode(
-            self.tokenizer.sep_token.join(text),
+            ' '.join(text),
             add_special_tokens=False,
             max_length=self.max_length,
             truncation=True
