@@ -5,7 +5,7 @@ In this example, we use Asyncval to validate dense retreiver ckeckpoints generat
 ## Pretokenize Query and Corpus Files
 Run: `bash get_data.sh`
 
-This downloads the cleaned corpu and dev queries of MS MARCO passage ranking dataset, and the query and corpus files will be pretokenized into the requried JSON format.
+This downloads the cleaned corpus and dev queries of MS MARCO passage ranking dataset, and the query and corpus files will be pretokenized into the required JSON format.
 
 ## Start Tevatron Training
 First, follow the instructions in this Tevatron [example](https://github.com/texttron/tevatron/blob/main/examples/example_msmarco.md) to start training. You don't need to do the encoding and search steps.
