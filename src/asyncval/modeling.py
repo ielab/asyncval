@@ -5,7 +5,7 @@ from asyncval.arguments import AsyncvalArguments
 import logging
 logger = logging.getLogger(__name__)
 try:
-    from tevatron.modeling import DenseModelForInference
+    from tevatron.modeling import DenseModel as DenseModelForInference
     HAS_TEVATRON = True
 except ModuleNotFoundError as err:
     logger.warning("Cannot find tevatron package.")
