@@ -45,7 +45,7 @@ After you get the corpus and query files and DenseModel class prepared. You can 
 ```
 python -m asyncval \
 	--query_file List[str] \
-	--candidate_file str \
+	--candidate_dir str \
 	--ckpts_dir str \
 	--tokenizer_name_or_path str \
 	--qrel_file str \
