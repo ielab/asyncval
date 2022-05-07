@@ -35,7 +35,7 @@ class DenseModel(Encoder):
     def __init__(self, ckpt_path, async_args):
         super(DenseModel, self).__init__(ckpt_path, async_args)
         if HAS_TEVATRON:
-            self.model = DenseModelForInference.build(model_name_or_path=self.ckpt_path,
+            self.model = DenseModelForInference.load(model_name_or_path=self.ckpt_path,
                                                       cache_dir=self.async_args.cache_dir)
 
     def encode_passage(self, psg):
