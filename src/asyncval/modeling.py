@@ -40,12 +40,12 @@ class DenseModel(Encoder):
 
     def encode_passage(self, psg):
         if HAS_TEVATRON:
-            return self.model.encode_passage(psg)[1]
+            return self.model.encode_passage(psg)
         else:
             return super(DenseModel, self).encode_passage(psg)
 
     def encode_query(self, qry):
         if HAS_TEVATRON:
-            return self.model.encode_passage(qry)[1]
+            return self.model.encode_passage(qry)
         else:
             return super(DenseModel, self).encode_passage(qry)
