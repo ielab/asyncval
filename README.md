@@ -62,7 +62,7 @@ python -m asyncval \
 | tokenizer\_name\_or\_path     | The path or name to the Huggingface tokenizer. (for padding and attention masking)             | str       | required            |
 | q\_max\_len                  | The maximum number of query token.                                                             | int       | 32                  |
 | p\_max\_len                  | The maximum number of document token.                                                          | int       | 128                 |
-| qrel_file                  | The path to the TREC format qrel file.                                                         | str       | required            |
+| qrel_file                  | The path to the [TREC format](https://trec.nist.gov/data/qrels_eng/) qrel file.                                                         | str       | required            |
 | run_name                   | A descriptor for the run. Typically used for [wandb](https://www.wandb.com/).                  | str       | None                |
 | write_run                  | Whether to write run files to disk.                                                            | bool      | True                |
 | output_dir                 | The path to save checkpoint run files.                                                         | str       | required            |
