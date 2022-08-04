@@ -100,7 +100,8 @@ If you used our toolkit in your research, please consider to cite us:
 @article{zhuang2022asyncval,
   title={Asyncval: A Toolkit for Asynchronously Validating Dense Retriever Checkpoints during Training},
   author={Zhuang, Shengyao and Zuccon, Guido},
-  journal={arXiv preprint arXiv:2202.12510},
-  year={2022}
+  booktitle = {Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  series = {SIGIR'22},
+  year = {2022},
 }
 ```
