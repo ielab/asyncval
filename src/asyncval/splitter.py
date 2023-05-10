@@ -49,7 +49,7 @@ def read_run_file(run_file, qrel_file, run_type, depth=100):
     with open(qrel_file) as qf:
         lines = qf.readlines()
         for line in tqdm(lines, desc='Loading qrel file'):
-            qid, _, did, _ = line.strip().split('\t')
+            qid, _, did, _ = line.split()
             uniq_dids.add(did)
 
     return uniq_dids
@@ -67,7 +67,7 @@ def main(args):
     logger.info(f"Total number of documents: {len(uniq_ids)}")
     files = os.listdir(args.candidate_dir)
     candidate_files = [
-        os.path.join(args.candidate_dir, f) for f in files if f.endswith('json')
+        os.path.join(args.candidate_dir, f) for f in files if f.endswith('json') or f.endswith('jsonl')
     ]
     candidate_data = datasets.load_dataset(
         'json',
@@ -80,7 +80,7 @@ def main(args):
         split_size = int(n_lines / args.num_splits)
     else:
         split_size = int(n_lines / args.num_splits) + 1
-    print(split_size)
+
     os.makedirs(args.output_dir, exist_ok=True)
     current_num = 0
     current_split_num = 0

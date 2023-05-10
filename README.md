@@ -72,7 +72,7 @@ python -m asyncval \
 | retrieve\_batch\_size        | The batch size for FAISS retrieval.                                                            | int       | 64                  |
 | fp16                       | Whether to use fp16 16-bit (mixed) precision encoding instead of 32-bit encoding.              | bool      | False               |
 | report_to                  | The list of integrations to report the results and logs to.                                    | str       | None                |
-| device                     | Set which GPU device for running asyncval.                                                     | str       | 'cuda:0'            |
+| devices                     | Set which GPU devices for running asyncval.                                                     | List[int]       | 0            |
 | depth                      | Retrival ranking depth (cutoff).                                                               | int       | 100                 |
 | cache_dir                  | Folder for saving encoding dataset cache.                                                      | str       | None                |
 

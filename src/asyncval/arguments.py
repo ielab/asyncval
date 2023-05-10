@@ -50,10 +50,15 @@ class AsyncvalArguments:
         default_factory=lambda: ['RR@10', 'nDCG@10'], metadata={"help": "The list of metrics for validation."}
     )
 
-    write_run: bool = field(
-        default=True, metadata={"help": "Write the run file to disk or not"}
+    write_run: str = field(
+        default=None, metadata={"help": "'trec' or 'marco', default is None, not to write a run file."}
     )
 
-    device: str = field(
-        default='cuda:0', metadata={"help": "The GPU device uses for running asyncval."}
+    write_embeddings: bool = field(
+        default=False, metadata={"help": "Write corpus embeddings into output_dir."}
+    )
+
+    devices: List[int] = field(
+        default_factory=lambda: [0], metadata={"help": "The GPU devices used for running asyncval. "
+                                                       "e.g., '--devices 0 1 2 3' for using DataParallel with 4 gpus"}
     )

@@ -12,7 +12,6 @@ except ModuleNotFoundError as err:
     HAS_TEVATRON = False
 
 
-
 class Encoder(torch.nn.Module):
     def __init__(self, ckpt_path: str, async_args: AsyncvalArguments):
         super().__init__()
@@ -37,6 +36,26 @@ class DenseModel(Encoder):
         if HAS_TEVATRON:
             self.model = DenseModelForInference.load(model_name_or_path=self.ckpt_path,
                                                       cache_dir=self.async_args.cache_dir)
+            self.lm_p = self.model.lm_p
+            self.lm_q = self.model.lm_q
+            self.pooler = self.model.pooler
+
+    def forward(self, input_ids, attention_mask, is_query=False):
+        if is_query:
+            qry_inputs = {
+                'input_ids': input_ids,
+                'attention_mask': attention_mask,
+            }
+            reps = self.model.encode_query(qry_inputs)
+
+        else:
+            psg_inputs = {
+                'input_ids': input_ids,
+                'attention_mask': attention_mask,
+            }
+            reps = self.model.encode_passage(psg_inputs)
+
+        return reps
 
     def encode_passage(self, psg):
         if HAS_TEVATRON:
@@ -46,6 +65,6 @@ class DenseModel(Encoder):
 
     def encode_query(self, qry):
         if HAS_TEVATRON:
-            return self.model.encode_passage(qry)
+            return self.model.encode_query(qry)
         else:
-            return super(DenseModel, self).encode_passage(qry)
+            return super(DenseModel, self).encode_query(qry)

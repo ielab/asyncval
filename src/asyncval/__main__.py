@@ -1,10 +1,11 @@
 import os
 import time
 import logging
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModel, BertModel, BertForMaskedLM
 from transformers import (
     HfArgumentParser,
     TrainingArguments,
+    pipeline
 )
 from asyncval.callbacks import get_reporting_integration_callbacks, CallbackHandler
 from torch.utils.data import DataLoader
@@ -13,6 +14,8 @@ from asyncval.modeling import DenseModel
 from asyncval.data import EncodeDataset
 from asyncval.retriever import BaseFaissIPRetriever
 from asyncval.evaluation import Evaluator
+from asyncval.pipeline import TextEncodingPipeline
+import faiss
 from asyncval.data import EncodeCollator
 from tqdm import tqdm
 import torch
@@ -21,20 +24,31 @@ import numpy as np
 import gc
 logger = logging.getLogger(__name__)
 
+from transformers.pipelines import PIPELINE_REGISTRY
 
-def write_ranking(corpus_indices, corpus_scores, q_lookup, ranking_save_file):
+PIPELINE_REGISTRY.register_pipeline(
+    "text-encoding-task",
+    pipeline_class=TextEncodingPipeline,
+    pt_model=BertForMaskedLM,
+)
+
+
+def write_ranking(corpus_indices, corpus_scores, q_lookup, ranking_save_file, format='marco'):
     with open(ranking_save_file, 'w') as f:
         for qid, q_doc_scores, q_doc_indices in zip(q_lookup, corpus_scores, corpus_indices):
             score_list = [(s, idx) for s, idx in zip(q_doc_scores, q_doc_indices)]
             score_list = sorted(score_list, key=lambda x: x[0], reverse=True)
             for rank, (s, idx) in enumerate(score_list):
-                f.write(f'{qid}\t{idx}\t{rank + 1}\n')
+                if format == 'marco':
+                    f.write(f'{qid}\t{idx}\t{rank + 1}\n')
+                elif format == 'trec':
+                    f.write(f'{qid} Q0 {idx} {rank + 1} {s} asyncval\n')
 
 
 def encoding(dataset, model, tokenizer, max_length, hf_args, async_args, encode_is_qry=False):
     encode_loader = DataLoader(
         dataset,
-        batch_size=hf_args.per_device_eval_batch_size,
+        batch_size=hf_args.per_device_eval_batch_size * len(async_args.devices),
         collate_fn=EncodeCollator(
             tokenizer,
             max_length=max_length,
@@ -51,13 +65,9 @@ def encoding(dataset, model, tokenizer, max_length, hf_args, async_args, encode_
         lookup_indices.extend(batch_ids)
         with torch.cuda.amp.autocast() if hf_args.fp16 else nullcontext():
             with torch.no_grad():
-                batch.to(async_args.device)
-                if encode_is_qry:
-                    q_reps = model.encode_query(batch)
-                    encoded.append(q_reps.cpu())
-                else:
-                    p_reps = model.encode_passage(batch)
-                    encoded.append(p_reps.cpu())
+                batch.to('cuda')
+                reps = model(batch['input_ids'], batch['attention_mask'], encode_is_qry)
+                encoded.append(reps.cpu())
 
     encoded = torch.cat(encoded)
     return lookup_indices, encoded
@@ -107,7 +117,7 @@ def main():
 
     files = os.listdir(async_args.candidate_dir)
     candidate_files = [
-        os.path.join(async_args.candidate_dir, f) for f in files if f.endswith('json')
+        os.path.join(async_args.candidate_dir, f) for f in files if f.endswith('json') or f.endswith('jsonl')
     ]
     candidate_dataset = EncodeDataset(candidate_files,
                                       tokenizer,
@@ -142,8 +152,12 @@ def main():
                 model = DenseModel(
                     ckpt_path=ckpt_path,
                     async_args=async_args,
-                ).eval()
-                model = model.to(async_args.device)
+                )
+                model.to("cuda")
+                model.eval()
+                if torch.cuda.device_count() > 1:
+                    print("Using", len(async_args.devices), "GPUs, using DataParallel.")
+                    model = torch.nn.DataParallel(model, device_ids=async_args.devices)
 
                 p_lookup, p_reps = encoding(candidate_dataset, model, tokenizer, async_args.p_max_len, hf_args, async_args)
 
@@ -156,6 +170,14 @@ def main():
                     q_reps_list.append(q_reps)
 
                 retriever = BaseFaissIPRetriever(p_reps.float().numpy())
+
+                if async_args.write_embeddings:
+                    embedings_dir = os.path.join(hf_args.output_dir, f'embeddings_{ckpt}')
+                    if not os.path.exists(embedings_dir):
+                        os.makedirs(embedings_dir)
+                    faiss.write_index(retriever.index, os.path.join(embedings_dir, 'index'))
+                    with open(os.path.join(embedings_dir, 'docid'), 'w') as f:
+                        f.write('\n'.join(p_lookup))
 
                 all_scores_list = []
                 psg_indices_list = []
@@ -172,10 +194,14 @@ def main():
                     for measure, score in evaluations:
                         log_metrics[f'query set {i}: {measure}'] = score
 
-                    if async_args.write_run:
+                    if async_args.write_run is not None:
                         if not os.path.exists(hf_args.output_dir):
                             os.makedirs(hf_args.output_dir)
-                        write_ranking(psg_indices, all_scores, q_lookup, os.path.join(hf_args.output_dir, f'set_{i}_{ckpt}.tsv'))
+                        write_ranking(psg_indices,
+                                      all_scores,
+                                      q_lookup,
+                                      os.path.join(hf_args.output_dir, f'set_{i}_{ckpt}.tsv'),
+                                      async_args.write_run)
 
                 end_val = time.time()
                 val_time = (end_val - start_val)/60
