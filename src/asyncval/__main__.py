@@ -14,7 +14,6 @@ from asyncval.modeling import DenseModel
 from asyncval.data import EncodeDataset
 from asyncval.retriever import BaseFaissIPRetriever
 from asyncval.evaluation import Evaluator
-from asyncval.pipeline import TextEncodingPipeline
 import faiss
 from asyncval.data import EncodeCollator
 from tqdm import tqdm
@@ -23,14 +22,6 @@ from contextlib import nullcontext
 import numpy as np
 import gc
 logger = logging.getLogger(__name__)
-
-from transformers.pipelines import PIPELINE_REGISTRY
-
-PIPELINE_REGISTRY.register_pipeline(
-    "text-encoding-task",
-    pipeline_class=TextEncodingPipeline,
-    pt_model=BertForMaskedLM,
-)
 
 
 def write_ranking(corpus_indices, corpus_scores, q_lookup, ranking_save_file, format='marco'):
